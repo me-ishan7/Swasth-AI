@@ -1,0 +1,12 @@
+{
+  "name": "swasthai-monorepo",
+  "private": true,
+  "description": "Root scripts for SwasthAI monorepo (frontend: Next.js, backend: Flask)",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "start": "npm --prefix frontend run start",
+    "frontend:dev": "npm --prefix frontend run dev",
+    "backend:dev": "python3 backend/app.py"
+  }
+}
