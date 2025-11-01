@@ -1,4 +1,4 @@
-// File: /Users/saadmadni/Downloads/2nd  year/project/SwasthAI 2/SwasThAI/frontend/app/page.tsx
+// File: /Users/ishankhan/Desktop/SwasthAI_hacks/Swasth-AI/frontend/app/page.tsx
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

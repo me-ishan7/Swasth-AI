@@ -1,0 +1,5 @@
+[
+  {"name": "Dr. A Sharma", "speciality": "General Physician", "lat": 28.6139, "lon": 77.2090, "phone": "9999000001"},
+  {"name": "Dr. Neha Kapoor", "speciality": "Cardiologist", "lat": 28.6200, "lon": 77.2100, "phone": "9999000002"},
+  {"name": "City Hospital ER", "speciality": "Emergency", "lat": 28.6050, "lon": 77.2300, "phone": "9999000003"}
+]

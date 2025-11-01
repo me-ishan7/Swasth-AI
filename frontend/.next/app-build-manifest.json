@@ -21,15 +21,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/test-ai/page.js"
     ],
-    "/health-check/page": [
+    "/simple-profile/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/health-check/page.js"
-    ],
-    "/_not-found/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+      "static/chunks/app/simple-profile/page.js"
     ]
   }
 }

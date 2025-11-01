@@ -1,27 +1,28 @@
-## Dockerfile for SwasthAI Python Backend (Flask API)
+# SwasthAI Backend - FastAPI/Tesseract/Ffmpeg ready image
 FROM python:3.11-slim
 
-# Install curl for healthchecks
-RUN apt-get update \
-	&& apt-get install -y --no-install-recommends curl \
-	&& rm -rf /var/lib/apt/lists/*
-
-# Set working directory
+ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 
-# Copy requirements and install dependencies
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt \
-	&& pip cache purge
+# Install dependencies: ffmpeg, tesseract, and basic build tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    tesseract-ocr \
+    libtesseract-dev \
+    build-essential \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy all backend source (models, utils, app.py, etc.)
-COPY . .
+# Copy dependency list and install Python packages
+COPY requirements.txt /app/requirements.txt
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r /app/requirements.txt
 
-# Expose port
-EXPOSE 5000
+# Copy your backend source
+COPY . /app
 
-# Environment
-ENV FLASK_ENV=production
+EXPOSE 8000
 
-# Run the application
-CMD ["python", "app.py"]
+# Start FastAPI using Uvicorn
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]

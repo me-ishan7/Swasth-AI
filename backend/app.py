@@ -131,3 +131,79 @@ if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     debug_mode = os.environ.get('FLASK_ENV') != 'production'
     app.run(debug=debug_mode, host='0.0.0.0', port=port)
+from fastapi import FastAPI, Form, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+from utils.symptom_extractor import SymptomExtractor
+from utils.doctor_finder import DoctorFinder
+import pytesseract
+from PIL import Image
+import os
+from faster_whisper import WhisperModel
+import tempfile
+
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# init components
+extractor = SymptomExtractor("data/symptom_disease.csv")
+finder = DoctorFinder("data/doctor_data.json")
+
+# Use tiny model for whisper to keep resource usage low; faster-whisper will auto-download
+whisper_model = WhisperModel("tiny", device="cpu")  # change device to "cuda" if you have GPU
+
+@app.post("/analyze_text")
+async def analyze_text(text: str = Form(...), lat: float = Form(None), lon: float = Form(None)):
+    symptoms = extractor.extract_symptoms_from_text(text)
+    diagnosis = extractor.diagnose(symptoms)
+    # find doctors if location provided
+    doctors = []
+    if lat is not None and lon is not None:
+        doctors = finder.find_nearest(lat, lon)
+    return {"input_type": "text", "text": text, "symptoms": symptoms, "diagnosis": diagnosis, "nearest_doctors": doctors}
+
+@app.post("/analyze_doc")
+async def analyze_doc(file: UploadFile = File(...), lat: float = Form(None), lon: float = Form(None)):
+    # expects an image (png/jpg) or PDF (PDF handling not implemented; convert to image offline)
+    contents = await file.read()
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+    tmp.write(contents)
+    tmp.flush()
+    tmp.close()
+    try:
+        img = Image.open(tmp.name)
+        text = pytesseract.image_to_string(img)
+    except Exception as e:
+        text = ""
+    finally:
+        os.unlink(tmp.name)
+    symptoms = extractor.extract_symptoms_from_text(text)
+    diagnosis = extractor.diagnose(symptoms)
+    doctors = []
+    if lat is not None and lon is not None:
+        doctors = finder.find_nearest(lat, lon)
+    return {"input_type": "document", "ocr_text": text, "symptoms": symptoms, "diagnosis": diagnosis, "nearest_doctors": doctors}
+
+@app.post("/analyze_voice")
+async def analyze_voice(file: UploadFile = File(...), lat: float = Form(None), lon: float = Form(None)):
+    # save file
+    contents = await file.read()
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
+    tmp.write(contents)
+    tmp.flush()
+    tmp.close()
+    # transcribe using faster-whisper
+    segments, info = whisper_model.transcribe(tmp.name, beam_size=5)
+    text = " ".join([seg.text for seg in segments])
+    os.unlink(tmp.name)
+    symptoms = extractor.extract_symptoms_from_text(text)
+    diagnosis = extractor.diagnose(symptoms)
+    doctors = []
+    if lat is not None and lon is not None:
+        doctors = finder.find_nearest(lat, lon)
+    return {"input_type": "voice", "transcript": text, "symptoms": symptoms, "diagnosis": diagnosis, "nearest_doctors": doctors}

@@ -6,10 +6,10 @@ WORKDIR /app
 # Install dependencies
 COPY package.json pnpm-lock.yaml* package-lock.json* yarn.lock* ./
 # Prefer pnpm if lockfile exists, then npm, then yarn
-RUN if [ -f pnpm-lock.yaml ]; then npm i -g pnpm && pnpm i --frozen-lockfile; \
-    elif [ -f package-lock.json ]; then npm ci; \
+RUN if [ -f pnpm-lock.yaml ]; then npm i -g pnpm && pnpm i --no-strict-peer-dependencies; \
+    elif [ -f package-lock.json ]; then npm ci --legacy-peer-deps; \
     elif [ -f yarn.lock ]; then corepack enable && yarn install --frozen-lockfile; \
-    else npm i; fi
+    else npm i --legacy-peer-deps; fi
 
 # Copy source and build
 COPY . .
@@ -31,6 +31,6 @@ COPY --from=builder /app/public ./public
 # COPY --from=builder /app/.next/standalone ./
 # COPY --from=builder /app/.next/static ./.next/static
 
-EXPOSE 3000
-
-CMD ["node", ".next/standalone/server.js"]
+EXPOSE 3001
+ENV PORT=3001
+CMD ["npm", "run", "start"]
