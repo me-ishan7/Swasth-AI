@@ -1,5 +1,50 @@
 # 🌿 GramSwasth: Revolutionizing Rural Healthcare
 
+> Note: The repository is now organized as a monorepo with separate frontend (Next.js) and backend (Python/Flask ML) services.
+
+## Monorepo structure
+
+```
+.
+├── frontend/        # Next.js app (App Router)
+│   ├── app/         # Routes and UI
+│   ├── components/  # Shared UI components
+│   ├── public/      # Static assets
+│   └── Dockerfile   # Production container (standalone)
+├── backend/         # Python ML API (Flask)
+│   ├── app.py       # API entrypoint
+│   ├── models/      # ML models (incl. models/ml/*)
+│   ├── utils/       # Helpers (symptom extraction, doctor finder)
+│   └── Dockerfile   # Backend container
+├── backend-node/    # Legacy Node backend (preserved)
+└── docker-compose.yml
+```
+
+## Quick start (local)
+
+- Frontend (Next.js):
+  - cd frontend
+  - Install deps: pnpm i (or npm i)
+  - Dev: pnpm dev (or npm run dev)
+
+- Backend (Flask):
+  - cd backend
+  - python -m venv .venv && source .venv/bin/activate
+  - pip install -r requirements.txt
+  - python app.py (exposes http://localhost:5000)
+
+## Docker (optional)
+
+Run both services via Docker:
+
+```
+docker compose up --build
+```
+
+This will start:
+- backend: http://localhost:5000/
+- frontend: http://localhost:3000/ (uses NEXT_PUBLIC_API_URL=http://backend:5000 inside the network)
+
 A comprehensive, secure, and user-friendly health management platform built with Next.js, TypeScript, and Supabase. SwasthAI enables users to manage their personal health information, family health records, medical appointments, and important documents in one centralized, secure location.
 
 ## 🌟 Features
