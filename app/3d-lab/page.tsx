@@ -1,24 +1,50 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, Suspense } from 'react'
 import dynamic from 'next/dynamic'
-import ThreeScene from '@/components/three/ThreeScene'
 import { infer, InferenceType } from '@/lib/ml'
 
-// Dynamically import components to avoid SSR issues
+// Loading component
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center h-96">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-3"></div>
+      <p className="text-gray-600 text-sm">Loading component...</p>
+    </div>
+  </div>
+)
+
+// Dynamically import components with lazy loading - only load when needed
 const HeartDiseaseWithVisualization = dynamic(
   () => import('@/components/HeartDiseaseWithVisualization'),
-  { ssr: false }
+  { 
+    ssr: false,
+    loading: () => <LoadingSpinner />
+  }
 )
 
 const BloodVesselSimulation = dynamic(
   () => import('@/components/three/BloodVesselSimulation'),
-  { ssr: false }
+  { 
+    ssr: false,
+    loading: () => <LoadingSpinner />
+  }
 )
 
 const DiabetesWithAnatomy = dynamic(
   () => import('@/components/DiabetesWithAnatomy'),
-  { ssr: false }
+  { 
+    ssr: false,
+    loading: () => <LoadingSpinner />
+  }
+)
+
+const ThreeScene = dynamic(
+  () => import('@/components/three/ThreeScene'),
+  { 
+    ssr: false,
+    loading: () => <LoadingSpinner />
+  }
 )
 
 type ViewMode = 'ml-inference' | 'heart-disease' | 'blood-vessel' | 'diabetes'
@@ -37,9 +63,9 @@ export default function LabPage() {
   const [loading, setLoading] = useState(false)
   const [isHypertension, setIsHypertension] = useState(true)
 
-  const modelUrl = useMemo(() => '/models/your-model.glb', []) // place your .glb here; falls back if missing
+  const modelUrl = useMemo(() => '/models/your-model.glb', [])
 
-  const onInfer = async () => {
+  const onInfer = React.useCallback(async () => {
     setError('')
     setResult(null)
     setLoading(true)
@@ -52,7 +78,7 @@ export default function LabPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [payload, type])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -114,12 +140,17 @@ export default function LabPage() {
         </div>
 
         {/* Content based on view mode */}
-        {viewMode === 'heart-disease' && (
-          <HeartDiseaseWithVisualization />
-        )}
+        <Suspense fallback={<LoadingSpinner />}>
+          {viewMode === 'heart-disease' && (
+            <div className="animate-in fade-in duration-300">
+              <HeartDiseaseWithVisualization />
+            </div>
+          )}
+        </Suspense>
 
-        {viewMode === 'blood-vessel' && (
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <Suspense fallback={<LoadingSpinner />}>
+          {viewMode === 'blood-vessel' && (
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden animate-in fade-in duration-300">
             <div className="p-8">
               <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6">
                 <div>
@@ -182,10 +213,12 @@ export default function LabPage() {
               </div>
             </div>
           </div>
-        )}
+          )}
+        </Suspense>
 
-        {viewMode === 'diabetes' && (
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <Suspense fallback={<LoadingSpinner />}>
+          {viewMode === 'diabetes' && (
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden animate-in fade-in duration-300">
             <div className="p-8">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -199,10 +232,12 @@ export default function LabPage() {
               <DiabetesWithAnatomy />
             </div>
           </div>
-        )}
+          )}
+        </Suspense>
 
-        {viewMode === 'ml-inference' && (
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <Suspense fallback={<LoadingSpinner />}>
+          {viewMode === 'ml-inference' && (
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden animate-in fade-in duration-300">
             <div className="p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">🤖 ML Model Testing</h2>
               
@@ -303,7 +338,8 @@ export default function LabPage() {
               </div>
             </div>
           </div>
-        )}
+          )}
+        </Suspense>
       </div>
     </div>
   )

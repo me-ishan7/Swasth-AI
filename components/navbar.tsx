@@ -99,15 +99,11 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
-        isScrolled
-          ? 'bg-white/10 backdrop-blur-xl border-b border-white/20 shadow-2xl shadow-black/10'
-          : 'bg-gradient-to-r from-slate-900/80 via-slate-800/80 to-slate-900/80 backdrop-blur-lg border-b border-white/10 shadow-xl'
-      }`}>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0f172a] border-b-2 border-slate-700 shadow-2xl shadow-black/30">
         {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-32 w-80 h-80 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -top-40 -left-32 w-80 h-80 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-32 w-80 h-80 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-full blur-3xl" />
+          <div className="absolute -top-40 -left-32 w-80 h-80 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 rounded-full blur-3xl" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
@@ -233,7 +229,7 @@ const Navbar = () => {
         <div className={`lg:hidden transition-all duration-300 overflow-hidden ${
           isMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
         }`}>
-          <div className="px-4 py-4 bg-slate-900/95 backdrop-blur-md border-t border-slate-700/50 space-y-2">
+          <div className="px-4 py-4 bg-[#0f172a] backdrop-blur-md border-t-2 border-slate-700 space-y-2">
             {navLinks.map((link) => (
               <Link
                 key={link.href}

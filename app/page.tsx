@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Stethoscope } from "lucide-react";
+import Footer from "@/components/footer";
 
 const translations = [
   { lang: "English", text: "Your Health, Our Priority" },
@@ -113,6 +114,8 @@ export default function BackgroundPaths() {
           </div>
         </motion.div>
       </div>
+      
+      <Footer />
     </div>
   );
-    }
+}

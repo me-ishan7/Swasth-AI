@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+**/node_modules/
 
 # next.js
 /.next/
@@ -9,6 +10,7 @@
 
 # production
 /build
+/dist
 
 # debug
 npm-debug.log*
@@ -26,3 +28,35 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# uploads and generated assets
+uploads/
+public/uploads/
+public/tmp/
+coverage/
+
+# temp/cache
+logs/
+.tmp/
+tmp/
+cache/
+.temp/
+*.log
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# editor/OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.code-workspace
+
+# misc backups
+*.local
+*.bak
+*.orig
