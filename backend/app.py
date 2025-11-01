@@ -3,6 +3,7 @@ from flask_cors import CORS
 import joblib
 import numpy as np
 import os
+from pathlib import Path
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -11,10 +12,29 @@ CORS(app)  # Enable CORS for all routes
 if os.environ.get('FLASK_ENV') == 'production':
     app.config['DEBUG'] = False
 
+# Helper to resolve model path with fallback to models/ml/
+def _model_path(filename: str) -> str:
+    base_paths = [
+        Path(__file__).parent / "models" / filename,
+        Path(__file__).parent / "models" / "ml" / filename,
+    ]
+    for p in base_paths:
+        if p.exists():
+            return str(p)
+    # Last resort: try relative working dir
+    alt_paths = [
+        Path("models") / filename,
+        Path("models") / "ml" / filename,
+    ]
+    for p in alt_paths:
+        if p.exists():
+            return str(p)
+    raise FileNotFoundError(f"Model file not found for {filename} in {base_paths + alt_paths}")
+
 # Load ML models
-diabetes_model = joblib.load("models/diabetes_model.pkl")
-heart_model = joblib.load("models/heart_disease_model.pkl")
-parkinsons_model = joblib.load("models/parkinsons_model.pkl")
+diabetes_model = joblib.load(_model_path("diabetes_model.pkl"))
+heart_model = joblib.load(_model_path("heart_disease_model.pkl"))
+parkinsons_model = joblib.load(_model_path("parkinsons_model.pkl"))
 
 # -------------------------
 # Home route

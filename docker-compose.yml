@@ -3,33 +3,29 @@ version: '3.8'
 services:
   backend:
     build:
-      context: .
-      dockerfile: Dockerfile.backend
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
     environment:
       - PORT=5000
       - FLASK_ENV=production
-    env_file:
-      - .env
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      test: ["CMD", "curl", "-fsS", "http://localhost:5000/"]
       interval: 30s
       timeout: 10s
       retries: 3
 
   frontend:
     build:
-      context: .
-      dockerfile: Dockerfile.frontend
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=http://backend:5000
-    env_file:
-      - .env.local
     depends_on:
       - backend
     restart: unless-stopped
